@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../---Menu---/drawerpage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -63,6 +64,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
+      drawer: const DrawerPage(),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -83,7 +85,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.account_circle_outlined, color: Colors.black87),
             onPressed: () {
-              // Handle profile
+              Scaffold.of(context).openDrawer();
             },
           ),
         ],
