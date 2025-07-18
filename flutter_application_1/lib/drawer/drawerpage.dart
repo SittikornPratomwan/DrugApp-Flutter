@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../---Menu---/Logout/logout.dart';
-import '../---Menu---/adddrug.dart';
+import '../---Menu---/logout.dart';
 
 class DrawerPage extends StatelessWidget {
   const DrawerPage({super.key});
@@ -72,10 +71,7 @@ class DrawerPage extends StatelessWidget {
             title: const Text('เพิ่มยา'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddDrugPage()),
-              );
+              // Navigate to drug management page
             },
           ),
           
