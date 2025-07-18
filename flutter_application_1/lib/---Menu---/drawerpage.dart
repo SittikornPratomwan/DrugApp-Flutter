@@ -22,35 +22,38 @@ class DrawerPage extends StatelessWidget {
                 ],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.person,
-                    size: 50,
-                    color: Color.fromARGB(255, 176, 208, 240),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      Icons.person,
+                      size: 50,
+                      color: Color.fromARGB(255, 176, 208, 240),
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'ผู้ใช้งาน',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(height: 10),
+                  Text(
+                    'ผู้ใช้งาน',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  'Drug Management System',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
+                  Text(
+                    'Drug Management System',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           
