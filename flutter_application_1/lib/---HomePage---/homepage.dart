@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../---Menu---/drawerpage.dart';
 
+
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String location;
+  const HomePage({super.key, this.location = ''});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -68,9 +70,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        title: const Text(
-          'Drug Management',
-          style: TextStyle(
+        centerTitle: true,
+        title: Text(
+          'Drug${widget.location.isNotEmpty ? ' - ${widget.location}' : ''}',
+          style: const TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
           ),

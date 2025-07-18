@@ -296,10 +296,12 @@ class _AuthenState extends State<Authen> {
           showSnackbar('เข้าสู่ระบบสำเร็จ', backgroundColor: Colors.blue);
           await Future.delayed(const Duration(milliseconds: 500));
           if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
-            );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(location: selectedLocation ?? ''),
+            ),
+          );
           }
         } else {
           showSnackbar(
