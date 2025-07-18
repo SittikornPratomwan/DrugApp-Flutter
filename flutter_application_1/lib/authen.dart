@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '---HomePage---/homepage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Authen extends StatefulWidget {
   const Authen({super.key});
@@ -38,10 +40,7 @@ class _AuthenState extends State<Authen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color.fromARGB(255, 176, 208, 240),
-              Colors.white,
-            ],
+            colors: [Color.fromARGB(255, 176, 208, 240), Colors.white],
           ),
         ),
         child: SafeArea(
@@ -69,10 +68,7 @@ class _AuthenState extends State<Authen> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(60),
-                      child: Image.asset(
-                        'images/logo.jpg',
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.asset('images/logo.jpg', fit: BoxFit.cover),
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -213,18 +209,20 @@ class _AuthenState extends State<Authen> {
             ),
           ),
           const SizedBox(height: 10),
-          ...locations.map((loc) => RadioListTile<int>(
-                title: Text(loc['name']),
-                value: loc['id'],
-                groupValue: selectedLocationId,
-                onChanged: (int? value) {
-                  setState(() {
-                    selectedLocationId = value;
-                    selectedLocation = loc['name'];
-                  });
-                },
-                activeColor: Colors.blue,
-              )),
+          ...locations.map(
+            (loc) => RadioListTile<int>(
+              title: Text(loc['name']),
+              value: loc['id'],
+              groupValue: selectedLocationId,
+              onChanged: (int? value) {
+                setState(() {
+                  selectedLocationId = value;
+                  selectedLocation = loc['name'];
+                });
+              },
+              activeColor: Colors.blue,
+            ),
+          ),
         ],
       ),
     );
@@ -276,29 +274,48 @@ class _AuthenState extends State<Authen> {
       showSnackbar('กรุณากรอก Password', backgroundColor: Colors.red);
       return;
     }
-    if (selectedLocation == null || selectedLocationId == null) {
-      showSnackbar('กรุณาเลือกสถานที่', backgroundColor: Colors.red);
-      return;
-    }
 
     setState(() {
       isLoading = true;
     });
 
-    // Simulate loading delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    // Show success message and navigate to HomePage
-    showSnackbar('เข้าสู่ระบบสำเร็จ', backgroundColor: Colors.blue);
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.56.106:8514/drugs/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': usernameController.text,
+          'password': passwordController.text,
+          'location_id': selectedLocationId,
+        }),
       );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        if (data['success'] == true) {
+          showSnackbar('เข้าสู่ระบบสำเร็จ', backgroundColor: Colors.blue);
+          await Future.delayed(const Duration(milliseconds: 500));
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          }
+        } else {
+          showSnackbar(
+            data['message'] ?? 'เข้าสู่ระบบไม่สำเร็จ',
+            backgroundColor: Colors.red,
+          );
+        }
+      } else {
+        showSnackbar(
+          'เกิดข้อผิดพลาด: ${response.statusCode}',
+          backgroundColor: Colors.red,
+        );
+      }
+    } catch (e) {
+      print('Login error: $e'); // เพิ่มบรรทัดนี้
+      showSnackbar('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้', backgroundColor: Colors.red);
     }
 
     setState(() {
