@@ -64,29 +64,30 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      // backgroundColor: Colors.grey.shade50, // ใช้สีจาก Theme
       drawer: const DrawerPage(),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white, // ใช้สีจาก Theme
         centerTitle: true,
         title: Text(
           'Drug${widget.location.isNotEmpty ? ' - ${widget.location}' : ''}',
-          style: const TextStyle(
-            color: Colors.black87,
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.titleTextStyle?.color ?? (isDark ? Colors.white : Colors.black87),
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
+            icon: Icon(Icons.notifications_outlined, color: isDark ? Colors.white : Colors.black87),
             onPressed: () {
               // Handle notifications
             },
           ),
           IconButton(
-            icon: const Icon(Icons.account_circle_outlined, color: Colors.black87),
+            icon: Icon(Icons.account_circle_outlined, color: isDark ? Colors.white : Colors.black87),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -103,41 +104,44 @@ class _HomePageState extends State<HomePage> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color.fromARGB(255, 176, 208, 240),
-                    Color.fromARGB(255, 144, 184, 228),
-                  ],
-                ),
+                gradient: isDark
+                    ? null
+                    : const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color.fromARGB(255, 176, 208, 240),
+                          Color.fromARGB(255, 144, 184, 228),
+                        ],
+                      ),
+                color: isDark ? Theme.of(context).cardColor : null,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'สวัสดี! 👋',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: isDark ? Colors.white : Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'ยินดีต้อนรับสู่ระบบจัดการคลังยา',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white70,
+                      color: isDark ? Colors.white70 : Colors.white70,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _buildStatCard('ยาทั้งหมด', '342', Icons.medication),
+                      _buildStatCard('ยาทั้งหมด', '342', Icons.medication, isDark),
                       const SizedBox(width: 12),
-                      _buildStatCard('ใกล้หมดอายุ', '12', Icons.warning_amber),
+                      _buildStatCard('ใกล้หมดอายุ', '12', Icons.warning_amber, isDark),
                     ],
                   ),
                 ],
@@ -149,7 +153,7 @@ class _HomePageState extends State<HomePage> {
             // Search Bar
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -164,26 +168,27 @@ class _HomePageState extends State<HomePage> {
                 controller: searchController,
                 decoration: InputDecoration(
                   hintText: 'ค้นหายา...',
-                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  prefixIcon: Icon(Icons.search, color: isDark ? Colors.white70 : Colors.grey),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).cardColor,
                 ),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black),
               ),
             ),
 
             const SizedBox(height: 24),
 
             // Categories Section
-            const Text(
+            Text(
               'หมวดหมู่ยา',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: isDark ? Colors.white : Colors.black87,
               ),
             ),
             const SizedBox(height: 16),
@@ -209,12 +214,12 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'ยาล่าสุด',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
                 TextButton(
@@ -248,12 +253,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon) {
+  Widget _buildStatCard(String title, String value, IconData icon, bool isDark) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: isDark ? Colors.grey[800] : Colors.white.withOpacity(0.2),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -283,13 +288,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildCategoryCard(Map<String, dynamic> category) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: () {
         // Navigate to category page
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.grey[900] : Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -320,10 +326,10 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 12),
               Text(
                 category['name'],
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: isDark ? Colors.white : Colors.black87,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -332,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                 '${category['count']} รายการ',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade600,
+                  color: isDark ? Colors.white70 : Colors.grey.shade600,
                 ),
               ),
             ],
@@ -344,11 +350,11 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildDrugCard(Map<String, dynamic> drug) {
     final bool lowStock = drug['stock'] < 100;
-    
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -364,7 +370,9 @@ class _HomePageState extends State<HomePage> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: lowStock ? Colors.red.shade50 : Colors.blue.shade50,
+            color: lowStock
+                ? (isDark ? Colors.red.shade900 : Colors.red.shade50)
+                : (isDark ? Colors.blue.shade900 : Colors.blue.shade50),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -374,9 +382,10 @@ class _HomePageState extends State<HomePage> {
         ),
         title: Text(
           drug['name'],
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
+            color: isDark ? Colors.white : Colors.black,
           ),
         ),
         subtitle: Column(
@@ -386,7 +395,7 @@ class _HomePageState extends State<HomePage> {
             Text(
               drug['category'],
               style: TextStyle(
-                color: Colors.grey.shade600,
+                color: isDark ? Colors.white70 : Colors.grey.shade600,
                 fontSize: 14,
               ),
             ),
@@ -396,14 +405,14 @@ class _HomePageState extends State<HomePage> {
                 Icon(
                   Icons.inventory,
                   size: 14,
-                  color: lowStock ? Colors.red : Colors.grey.shade600,
+                  color: lowStock ? Colors.red : (isDark ? Colors.white70 : Colors.grey.shade600),
                 ),
                 const SizedBox(width: 4),
                 Text(
                   'คงเหลือ: ${drug['stock']}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: lowStock ? Colors.red : Colors.grey.shade600,
+                    color: lowStock ? Colors.red : (isDark ? Colors.white70 : Colors.grey.shade600),
                     fontWeight: lowStock ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
@@ -419,7 +428,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade100,
+                  color: isDark ? Colors.red.shade900 : Colors.red.shade100,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
@@ -436,7 +445,7 @@ class _HomePageState extends State<HomePage> {
               'หมดอายุ: ${drug['expiry']}',
               style: TextStyle(
                 fontSize: 10,
-                color: Colors.grey.shade500,
+                color: isDark ? Colors.white54 : Colors.grey.shade500,
               ),
             ),
           ],

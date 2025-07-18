@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../---Menu---/Logout/logout.dart';
 import '../---Menu---/adddrug.dart';
+import '../---Menu---/sitting.dart';
 
 class DrawerPage extends StatelessWidget {
   const DrawerPage({super.key});
@@ -104,7 +105,10 @@ class DrawerPage extends StatelessWidget {
             title: const Text('ตั้งค่า'),
             onTap: () {
               Navigator.pop(context);
-              // Navigate to settings page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SittingPage()),
+              );
             },
           ),
           
