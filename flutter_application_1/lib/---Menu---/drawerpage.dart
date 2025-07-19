@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/---Menu---/logout.dart';
 import '../---Menu---/adddrug.dart';
-import '../---Menu---/sitting.dart';
+import 'setting.dart';
+import '../---Translate---/locale_manager.dart';
+import '../---Translate---/vocabulary.dart';
 
-class DrawerPage extends StatelessWidget {
+class DrawerPage extends StatefulWidget {
   const DrawerPage({super.key});
+
+  @override
+  State<DrawerPage> createState() => _DrawerPageState();
+}
+
+class _DrawerPageState extends State<DrawerPage> {
+  String get currentLanguage => localeManager.currentLocale.languageCode;
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +22,8 @@ class DrawerPage extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           // Header
-          const DrawerHeader(
-            decoration: BoxDecoration(
+          DrawerHeader(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -29,7 +38,7 @@ class DrawerPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
                     child: Icon(
@@ -38,18 +47,18 @@ class DrawerPage extends StatelessWidget {
                       color: Color.fromARGB(255, 176, 208, 240),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
-                    'ผู้ใช้งาน',
-                    style: TextStyle(
+                    AppLocalizations.get('username', currentLanguage),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    'Drug Management System',
-                    style: TextStyle(
+                    AppLocalizations.get('drug_management_system', currentLanguage),
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
                     ),
@@ -62,7 +71,7 @@ class DrawerPage extends StatelessWidget {
           // Menu Items
           ListTile(
             leading: const Icon(Icons.home, color: Colors.blue),
-            title: const Text('หน้าหลัก'),
+            title: Text(AppLocalizations.get('home', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
             },
@@ -70,7 +79,7 @@ class DrawerPage extends StatelessWidget {
           
           ListTile(
             leading: const Icon(Icons.medication, color: Colors.green),
-            title: const Text('เพิ่มยา'),
+            title: Text(AppLocalizations.get('add_drug', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -82,7 +91,7 @@ class DrawerPage extends StatelessWidget {
           
           ListTile(
             leading: const Icon(Icons.inventory, color: Colors.orange),
-            title: const Text('คลังยา'),
+            title: Text(AppLocalizations.get('inventory', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
               // Navigate to inventory page
@@ -91,7 +100,7 @@ class DrawerPage extends StatelessWidget {
           
           ListTile(
             leading: const Icon(Icons.analytics, color: Colors.purple),
-            title: const Text('รายงาน'),
+            title: Text(AppLocalizations.get('reports', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
               // Navigate to reports page
@@ -102,7 +111,7 @@ class DrawerPage extends StatelessWidget {
           
           ListTile(
             leading: const Icon(Icons.settings, color: Colors.grey),
-            title: const Text('ตั้งค่า'),
+            title: Text(AppLocalizations.get('settings', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -114,7 +123,7 @@ class DrawerPage extends StatelessWidget {
           
           ListTile(
             leading: const Icon(Icons.help, color: Colors.blue),
-            title: const Text('ช่วยเหลือ'),
+            title: Text(AppLocalizations.get('help', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
               // Navigate to help page
@@ -125,7 +134,7 @@ class DrawerPage extends StatelessWidget {
           
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text('ออกจากระบบ'),
+            title: Text(AppLocalizations.get('logout', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
               showLogoutDialog(context);

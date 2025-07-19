@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '---HomePage---/homepage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '---Translate---/locale_manager.dart';
+import '---Translate---/vocabulary.dart';
 
 class Authen extends StatefulWidget {
   const Authen({super.key});
@@ -16,6 +18,7 @@ class _AuthenState extends State<Authen> {
   String? selectedLocation;
   int? selectedLocationId;
   bool isLoading = false;
+  String get currentLanguage => localeManager.currentLocale.languageCode;
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -74,7 +77,7 @@ class _AuthenState extends State<Authen> {
                   const SizedBox(height: 40),
                   buildTextField(
                     controller: usernameController,
-                    labelText: 'Username',
+                    labelText: AppLocalizations.get('username', currentLanguage),
                     prefixIcon: Icons.person,
                   ),
                   const SizedBox(height: 20),
@@ -160,7 +163,7 @@ class _AuthenState extends State<Authen> {
               color: Colors.blue,
             ),
           ),
-          labelText: 'Password',
+          labelText: AppLocalizations.get('password', currentLanguage),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
@@ -178,9 +181,9 @@ class _AuthenState extends State<Authen> {
 
   Widget buildLocationRadio() {
     final List<Map<String, dynamic>> locations = [
-      {'id': 1, 'name': 'LamLukKa'},
-      {'id': 2, 'name': 'BanBueng'},
-      {'id': 3, 'name': 'HeadOffice'},
+      {'id': 1, 'name': 'LamLukKa', 'displayKey': 'lam_luk_ka'},
+      {'id': 2, 'name': 'BanBueng', 'displayKey': 'ban_bueng'},
+      {'id': 3, 'name': 'HeadOffice', 'displayKey': 'head_office'},
     ];
 
     return Container(
@@ -200,9 +203,9 @@ class _AuthenState extends State<Authen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Select Location:',
-            style: TextStyle(
+          Text(
+            '${AppLocalizations.get('location', currentLanguage)}:',
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.blue,
@@ -211,7 +214,7 @@ class _AuthenState extends State<Authen> {
           const SizedBox(height: 10),
           ...locations.map(
             (loc) => RadioListTile<int>(
-              title: Text(loc['name']),
+              title: Text(AppLocalizations.get(loc['displayKey'], currentLanguage)),
               value: loc['id'],
               groupValue: selectedLocationId,
               onChanged: (int? value) {
@@ -253,9 +256,9 @@ class _AuthenState extends State<Authen> {
         onPressed: isLoading ? null : handleLogin,
         child: isLoading
             ? const CircularProgressIndicator(color: Colors.white)
-            : const Text(
-                'Login',
-                style: TextStyle(
+            : Text(
+                AppLocalizations.get('login', currentLanguage),
+                style: const TextStyle(
                   fontSize: 18,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -267,11 +270,24 @@ class _AuthenState extends State<Authen> {
 
   Future<void> handleLogin() async {
     if (usernameController.text.isEmpty) {
-      showSnackbar('กรุณากรอก Username', backgroundColor: Colors.red);
+      showSnackbar(
+        '${AppLocalizations.get('please_enter', currentLanguage)} ${AppLocalizations.get('username', currentLanguage)}', 
+        backgroundColor: Colors.red
+      );
       return;
     }
     if (passwordController.text.isEmpty) {
-      showSnackbar('กรุณากรอก Password', backgroundColor: Colors.red);
+      showSnackbar(
+        '${AppLocalizations.get('please_enter', currentLanguage)} ${AppLocalizations.get('password', currentLanguage)}', 
+        backgroundColor: Colors.red
+      );
+      return;
+    }
+    if (selectedLocationId == null) {
+      showSnackbar(
+        AppLocalizations.get('please_select_location', currentLanguage), 
+        backgroundColor: Colors.red
+      );
       return;
     }
 
@@ -293,7 +309,7 @@ class _AuthenState extends State<Authen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         if (data['success'] == true) {
-          showSnackbar('เข้าสู่ระบบสำเร็จ', backgroundColor: Colors.blue);
+          showSnackbar(AppLocalizations.get('login_success', currentLanguage), backgroundColor: Colors.blue);
           await Future.delayed(const Duration(milliseconds: 500));
           if (mounted) {
           Navigator.pushReplacement(
@@ -305,19 +321,19 @@ class _AuthenState extends State<Authen> {
           }
         } else {
           showSnackbar(
-            data['message'] ?? 'เข้าสู่ระบบไม่สำเร็จ',
+            data['message'] ?? AppLocalizations.get('login_failed', currentLanguage),
             backgroundColor: Colors.red,
           );
         }
       } else {
         showSnackbar(
-          'เกิดข้อผิดพลาด: ${response.statusCode}',
+          '${AppLocalizations.get('error_occurred', currentLanguage)}: ${response.statusCode}',
           backgroundColor: Colors.red,
         );
       }
     } catch (e) {
       print('Login error: $e'); // เพิ่มบรรทัดนี้
-      showSnackbar('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้', backgroundColor: Colors.red);
+      showSnackbar(AppLocalizations.get('network_error', currentLanguage), backgroundColor: Colors.red);
     }
 
     setState(() {

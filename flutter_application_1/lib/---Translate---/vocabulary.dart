@@ -1,0 +1,78 @@
+class AppLocalizations {
+  static const Map<String, Map<String, String>> _localizedValues = {
+    'th': {
+      'settings': 'ตั้งค่า',
+      'dark_mode': 'โหมดกลางคืน (Dark Mode)',
+      'language': 'ภาษา',
+      'thai': 'ไทย',
+      'english': 'อังกฤษ',
+      'about_app': 'เกี่ยวกับแอปพลิเคชัน',
+      'drug_management_system': 'ระบบจัดการยา v1.0',
+      'login': 'เข้าสู่ระบบ',
+      'username': 'ชื่อผู้ใช้',
+      'password': 'รหัสผ่าน',
+      'home': 'หน้าหลัก',
+      'add_drug': 'เพิ่มยา',
+      'logout': 'ออกจากระบบ',
+      'location': 'สถานที่',
+      'lam_luk_ka': 'ลำลูกกา',
+      'ban_bueng': 'บ้านบึง',
+      'head_office': 'สำนักงานใหญ่',
+      'please_select_location': 'กรุณาเลือกสถานที่',
+      'please_enter': 'กรุณากรอก',
+      'login_success': 'เข้าสู่ระบบสำเร็จ',
+      'login_failed': 'เข้าสู่ระบบไม่สำเร็จ',
+      'invalid_credentials': 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
+      'network_error': 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้',
+      'error_occurred': 'เกิดข้อผิดพลาด',
+      'menu': 'เมนู',
+      'drawer_title': 'เมนู',
+      'search': 'ค้นหา',
+      'no_drugs_found': 'ไม่พบข้อมูลยา',
+      'inventory': 'คลังยา',
+      'reports': 'รายงาน',
+      'help': 'ช่วยเหลือ',
+    },
+    'en': {
+      'settings': 'Settings',
+      'dark_mode': 'Dark Mode',
+      'language': 'Language',
+      'thai': 'Thai',
+      'english': 'English',
+      'about_app': 'About Application',
+      'drug_management_system': 'Drug Management System v1.0',
+      'login': 'Login',
+      'username': 'Username',
+      'password': 'Password',
+      'home': 'Home',
+      'add_drug': 'Add Drug',
+      'logout': 'Logout',
+      'location': 'Location',
+      'lam_luk_ka': 'Lam Luk Ka',
+      'ban_bueng': 'Ban Bueng',
+      'head_office': 'Head Office',
+      'please_select_location': 'Please select location',
+      'please_enter': 'Please enter',
+      'login_success': 'Login successful',
+      'login_failed': 'Login failed',
+      'invalid_credentials': 'Invalid username or password',
+      'network_error': 'Unable to connect to server',
+      'error_occurred': 'An error occurred',
+      'menu': 'Menu',
+      'drawer_title': 'Menu',
+      'search': 'Search',
+      'no_drugs_found': 'No drugs found',
+      'inventory': 'Inventory',
+      'reports': 'Reports',
+      'help': 'Help',
+    },
+  };
+
+  static String translate(String key, String languageCode) {
+    return _localizedValues[languageCode]?[key] ?? key;
+  }
+
+  static String get(String key, String languageCode) {
+    return translate(key, languageCode);
+  }
+}
