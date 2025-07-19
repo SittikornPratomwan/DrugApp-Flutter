@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/---Menu---/logout.dart';
 import '../---Menu---/adddrug.dart';
 import 'setting.dart';
+import 'help.dart';
 import '../---Translate---/locale_manager.dart';
 import '../---Translate---/vocabulary.dart';
 
@@ -126,7 +127,10 @@ class _DrawerPageState extends State<DrawerPage> {
             title: Text(AppLocalizations.get('help', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
-              // Navigate to help page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HelpPage()),
+              );
             },
           ),
           
