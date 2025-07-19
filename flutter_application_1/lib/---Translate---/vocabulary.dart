@@ -43,6 +43,7 @@ class AppLocalizations {
       'stock': 'คงเหลือ',
       'low_stock': 'สต็อกต่ำ',
       'expiry': 'หมดอายุ',
+      'notifications': 'การแจ้งเตือน',
     },
     'en': {
       'settings': 'Settings',
@@ -87,6 +88,7 @@ class AppLocalizations {
       'stock': 'Stock',
       'low_stock': 'Low Stock',
       'expiry': 'Expiry',
+      'notifications': 'Notifications',
     },
   };
 

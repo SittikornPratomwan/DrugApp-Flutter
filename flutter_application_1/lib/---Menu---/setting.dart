@@ -13,6 +13,9 @@ class SittingPage extends StatefulWidget {
 class _SittingPageState extends State<SittingPage> {
   bool get isDarkMode => themeModeNotifier.value == ThemeMode.dark;
   String get currentLanguage => localeManager.currentLocale.languageCode;
+  
+  // เพิ่มตัวแปรสำหรับการแจ้งเตือน
+  bool _notificationsEnabled = true;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +36,18 @@ class _SittingPageState extends State<SittingPage> {
             onChanged: (val) {
               themeModeNotifier.value = val ? ThemeMode.dark : ThemeMode.light;
               setState(() {});
+            },
+          ),
+          const Divider(),
+          SwitchListTile(
+            title: Text(AppLocalizations.get('notifications', currentLanguage)),
+            secondary: const Icon(Icons.notifications),
+            value: _notificationsEnabled,
+            onChanged: (val) {
+              setState(() {
+                _notificationsEnabled = val;
+              });
+              // TODO: บันทึกการตั้งค่าการแจ้งเตือน
             },
           ),
           const Divider(),
