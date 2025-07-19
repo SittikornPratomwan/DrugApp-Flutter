@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../---Menu---/drawerpage.dart';
+import '../---Translate---/vocabulary.dart';
+import '../---Translate---/locale_manager.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -65,6 +68,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currentLanguage = localeManager.currentLocale.languageCode;
     return Scaffold(
       // backgroundColor: Colors.grey.shade50, // ใช้สีจาก Theme
       drawer: const DrawerPage(),
@@ -121,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'สวัสดี! 👋',
+                    AppLocalizations.get('welcome', currentLanguage),
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -130,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'ยินดีต้อนรับสู่ระบบจัดการคลังยา',
+                    AppLocalizations.get('welcome_message', currentLanguage),
                     style: TextStyle(
                       fontSize: 16,
                       color: isDark ? Colors.white70 : Colors.white70,
@@ -139,9 +143,9 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _buildStatCard('ยาทั้งหมด', '342', Icons.medication, isDark),
+                      _buildStatCard(AppLocalizations.get('all_drugs', currentLanguage), '342', Icons.medication, isDark),
                       const SizedBox(width: 12),
-                      _buildStatCard('ใกล้หมดอายุ', '12', Icons.warning_amber, isDark),
+                      _buildStatCard(AppLocalizations.get('expiring_soon', currentLanguage), '12', Icons.warning_amber, isDark),
                     ],
                   ),
                 ],
@@ -167,7 +171,7 @@ class _HomePageState extends State<HomePage> {
               child: TextField(
                 controller: searchController,
                 decoration: InputDecoration(
-                  hintText: 'ค้นหายา...',
+                  hintText: AppLocalizations.get('search', currentLanguage),
                   prefixIcon: Icon(Icons.search, color: isDark ? Colors.white70 : Colors.grey),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -184,7 +188,7 @@ class _HomePageState extends State<HomePage> {
 
             // Categories Section
             Text(
-              'หมวดหมู่ยา',
+              AppLocalizations.get('drug_categories', currentLanguage),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -215,7 +219,7 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'ยาล่าสุด',
+                  AppLocalizations.get('recent_drugs', currentLanguage),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -226,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () {
                     // Navigate to all drugs
                   },
-                  child: const Text('ดูทั้งหมด'),
+                  child: Text(AppLocalizations.get('see_all', currentLanguage)),
                 ),
               ],
             ),
@@ -289,6 +293,15 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildCategoryCard(Map<String, dynamic> category) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currentLanguage = localeManager.currentLocale.languageCode;
+    // Map Thai category names to English if needed
+    String categoryName = category['name'];
+    if (currentLanguage == 'en') {
+      if (categoryName == 'ยาแก้ปวด') categoryName = 'Pain Relievers';
+      else if (categoryName == 'ยาแก้ไข้') categoryName = 'Antipyretics';
+      else if (categoryName == 'ยาแก้อักเสบ') categoryName = 'Anti-inflammatories';
+      else if (categoryName == 'วิตามิน') categoryName = 'Vitamins';
+    }
     return GestureDetector(
       onTap: () {
         // Navigate to category page
@@ -325,7 +338,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 12),
               Text(
-                category['name'],
+                categoryName,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -335,7 +348,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 4),
               Text(
-                '${category['count']} รายการ',
+                '${category['count']} ${AppLocalizations.get('items', currentLanguage)}',
                 style: TextStyle(
                   fontSize: 12,
                   color: isDark ? Colors.white70 : Colors.grey.shade600,
@@ -351,6 +364,15 @@ class _HomePageState extends State<HomePage> {
   Widget _buildDrugCard(Map<String, dynamic> drug) {
     final bool lowStock = drug['stock'] < 100;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currentLanguage = localeManager.currentLocale.languageCode;
+    // Map Thai category names to English if needed
+    String categoryName = drug['category'];
+    if (currentLanguage == 'en') {
+      if (categoryName == 'ยาแก้ปวด') categoryName = 'Pain Relievers';
+      else if (categoryName == 'ยาแก้ไข้') categoryName = 'Antipyretics';
+      else if (categoryName == 'ยาแก้อักเสบ') categoryName = 'Anti-inflammatories';
+      else if (categoryName == 'วิตามิน') categoryName = 'Vitamins';
+    }
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -393,7 +415,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             const SizedBox(height: 4),
             Text(
-              drug['category'],
+              categoryName,
               style: TextStyle(
                 color: isDark ? Colors.white70 : Colors.grey.shade600,
                 fontSize: 14,
@@ -409,7 +431,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'คงเหลือ: ${drug['stock']}',
+                  '${AppLocalizations.get('stock', currentLanguage)}: ${drug['stock']}',
                   style: TextStyle(
                     fontSize: 12,
                     color: lowStock ? Colors.red : (isDark ? Colors.white70 : Colors.grey.shade600),
@@ -431,9 +453,9 @@ class _HomePageState extends State<HomePage> {
                   color: isDark ? Colors.red.shade900 : Colors.red.shade100,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
-                  'สต็อกต่ำ',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.get('low_stock', currentLanguage),
+                  style: const TextStyle(
                     color: Colors.red,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -442,7 +464,7 @@ class _HomePageState extends State<HomePage> {
               ),
             const SizedBox(height: 4),
             Text(
-              'หมดอายุ: ${drug['expiry']}',
+              '${AppLocalizations.get('expiry', currentLanguage)}: ${drug['expiry']}',
               style: TextStyle(
                 fontSize: 10,
                 color: isDark ? Colors.white54 : Colors.grey.shade500,

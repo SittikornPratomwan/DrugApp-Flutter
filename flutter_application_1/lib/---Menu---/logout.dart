@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../---Translate---/locale_manager.dart';
+import '../---Translate---/vocabulary.dart';
 
 Future<void> logout(BuildContext context) async {
   try {
@@ -27,27 +29,30 @@ Future<void> logout(BuildContext context) async {
 }
 
 void showLogoutDialog(BuildContext context) {
+  final String currentLanguage = localeManager.currentLocale.languageCode;
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('ออกจากระบบ'),
-        content: const Text('คุณต้องการออกจากระบบหรือไม่?'),
+        title: Text(AppLocalizations.get('logout', currentLanguage)),
+        content: Text(currentLanguage == 'th'
+            ? 'คุณต้องการออกจากระบบหรือไม่?'
+            : 'Do you want to logout?'),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('ยกเลิก'),
+            child: Text(currentLanguage == 'th' ? 'ยกเลิก' : 'Cancel'),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               logout(context);
             },
-            child: const Text(
-              'ออกจากระบบ',
-              style: TextStyle(color: Colors.red),
+            child: Text(
+              AppLocalizations.get('logout', currentLanguage),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -55,4 +60,3 @@ void showLogoutDialog(BuildContext context) {
     },
   );
 }
-//2222
