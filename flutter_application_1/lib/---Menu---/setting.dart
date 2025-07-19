@@ -28,6 +28,7 @@ class _SittingPageState extends State<SittingPage> {
         centerTitle: true,
       ),
       body: ListView(
+        padding: const EdgeInsets.only(top: 32, left: 0, right: 0, bottom: 0),
         children: [
           SwitchListTile(
             title: Text(AppLocalizations.get('dark_mode', currentLanguage)),

@@ -34,18 +34,28 @@ class _AuthenState extends State<Authen> {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
         width: screenWidth,
         height: screenHeight,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color.fromARGB(255, 176, 208, 240), Colors.white],
-          ),
-        ),
+        decoration: isDark
+            ? const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF232526), Color(0xFF414345)],
+                ),
+              )
+            : const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color.fromARGB(255, 176, 208, 240), Colors.white],
+                ),
+              ),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -59,12 +69,12 @@ class _AuthenState extends State<Authen> {
                     width: 120,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(60),
-                      color: Colors.white,
+                      color: isDark ? const Color(0xFF232526) : Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
+                          color: isDark ? Colors.black.withOpacity(0.5) : Colors.grey.withOpacity(0.3),
                           spreadRadius: 2,
-                          blurRadius: 5,
+                          blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
                       ],
@@ -79,13 +89,14 @@ class _AuthenState extends State<Authen> {
                     controller: usernameController,
                     labelText: AppLocalizations.get('username', currentLanguage),
                     prefixIcon: Icons.person,
+                    isDark: isDark,
                   ),
                   const SizedBox(height: 20),
-                  buildPasswordField(),
+                  buildPasswordField(isDark: isDark),
                   const SizedBox(height: 30),
-                  buildLocationRadio(),
+                  buildLocationRadio(isDark: isDark),
                   const SizedBox(height: 30),
-                  buildLoginButton(),
+                  buildLoginButton(isDark: isDark),
                 ],
               ),
             ),
@@ -99,6 +110,7 @@ class _AuthenState extends State<Authen> {
     required TextEditingController controller,
     required String labelText,
     required IconData prefixIcon,
+    required bool isDark,
   }) {
     return Container(
       width: screenWidth * 0.8,
@@ -106,7 +118,7 @@ class _AuthenState extends State<Authen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: isDark ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.2),
             spreadRadius: 1,
             blurRadius: 3,
             offset: const Offset(0, 2),
@@ -115,32 +127,34 @@ class _AuthenState extends State<Authen> {
       ),
       child: TextField(
         controller: controller,
+        style: TextStyle(color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
-          prefixIcon: Icon(prefixIcon, color: Colors.blue),
+          prefixIcon: Icon(prefixIcon, color: isDark ? Colors.lightBlue[200] : Colors.blue),
           labelText: labelText,
+          labelStyle: TextStyle(color: isDark ? Colors.white70 : Colors.black54),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: isDark ? const Color(0xFF232526) : Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Colors.blue, width: 2),
+            borderSide: BorderSide(color: isDark ? Colors.lightBlueAccent : Colors.blue, width: 2),
           ),
         ),
       ),
     );
   }
 
-  Widget buildPasswordField() {
+  Widget buildPasswordField({required bool isDark}) {
     return Container(
       width: screenWidth * 0.8,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: isDark ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.2),
             spreadRadius: 1,
             blurRadius: 3,
             offset: const Offset(0, 2),
@@ -150,8 +164,9 @@ class _AuthenState extends State<Authen> {
       child: TextField(
         controller: passwordController,
         obscureText: redEye,
+        style: TextStyle(color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.lock_outline, color: Colors.blue),
+          prefixIcon: Icon(Icons.lock_outline, color: isDark ? Colors.lightBlue[200] : Colors.blue),
           suffixIcon: IconButton(
             onPressed: () {
               setState(() {
@@ -160,26 +175,27 @@ class _AuthenState extends State<Authen> {
             },
             icon: Icon(
               redEye ? Icons.visibility_off : Icons.visibility,
-              color: Colors.blue,
+              color: isDark ? Colors.lightBlue[200] : Colors.blue,
             ),
           ),
           labelText: AppLocalizations.get('password', currentLanguage),
+          labelStyle: TextStyle(color: isDark ? Colors.white70 : Colors.black54),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: isDark ? const Color(0xFF232526) : Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Colors.blue, width: 2),
+            borderSide: BorderSide(color: isDark ? Colors.lightBlueAccent : Colors.blue, width: 2),
           ),
         ),
       ),
     );
   }
 
-  Widget buildLocationRadio() {
+  Widget buildLocationRadio({required bool isDark}) {
     final List<Map<String, dynamic>> locations = [
       {'id': 1, 'name': 'LamLukKa', 'displayKey': 'lam_luk_ka'},
       {'id': 2, 'name': 'BanBueng', 'displayKey': 'ban_bueng'},
@@ -189,11 +205,11 @@ class _AuthenState extends State<Authen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF232526) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: isDark ? Colors.black.withOpacity(0.3) : Colors.grey.withOpacity(0.2),
             spreadRadius: 1,
             blurRadius: 3,
             offset: const Offset(0, 2),
@@ -205,16 +221,19 @@ class _AuthenState extends State<Authen> {
         children: [
           Text(
             '${AppLocalizations.get('location', currentLanguage)}:',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.blue,
+              color: isDark ? Colors.lightBlue[200] : Colors.blue,
             ),
           ),
           const SizedBox(height: 10),
           ...locations.map(
             (loc) => RadioListTile<int>(
-              title: Text(AppLocalizations.get(loc['displayKey'], currentLanguage)),
+              title: Text(
+                AppLocalizations.get(loc['displayKey'], currentLanguage),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black),
+              ),
               value: loc['id'],
               groupValue: selectedLocationId,
               onChanged: (int? value) {
@@ -223,7 +242,8 @@ class _AuthenState extends State<Authen> {
                   selectedLocation = loc['name'];
                 });
               },
-              activeColor: Colors.blue,
+              activeColor: isDark ? Colors.lightBlueAccent : Colors.blue,
+              tileColor: Colors.transparent,
             ),
           ),
         ],
@@ -231,7 +251,7 @@ class _AuthenState extends State<Authen> {
     );
   }
 
-  Widget buildLoginButton() {
+  Widget buildLoginButton({required bool isDark}) {
     return Container(
       width: screenWidth * 0.6,
       height: 50,
@@ -239,7 +259,7 @@ class _AuthenState extends State<Authen> {
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
+            color: isDark ? Colors.lightBlueAccent.withOpacity(0.2) : Colors.blue.withOpacity(0.3),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -248,7 +268,7 @@ class _AuthenState extends State<Authen> {
       ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
+          backgroundColor: isDark ? Colors.lightBlueAccent : Colors.blue,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
           ),
