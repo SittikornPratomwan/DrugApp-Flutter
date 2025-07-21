@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/---Menu---/addcontinuingtreatment.dart';
+import 'package:flutter_application_1/---Menu---/continuingtreatment.dart';
+import 'package:flutter_application_1/---Menu---/drugstock.dart';
 import 'package:flutter_application_1/---Menu---/logout.dart';
 import '../---Menu---/adddrug.dart';
 import 'setting.dart';
@@ -72,7 +74,7 @@ class _DrawerPageState extends State<DrawerPage> {
           
           // Menu Items
           ListTile(
-            leading: const Icon(Icons.add_circle_outline, color: Colors.blue),
+            leading: const Icon(Icons.person_add, color: Colors.blue),
             title: Text(AppLocalizations.get('Add Continuing treatment', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
@@ -90,6 +92,12 @@ class _DrawerPageState extends State<DrawerPage> {
             title: Text(AppLocalizations.get('Continuing treatment', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ContinuingTreatmentPage(),
+                ),
+              );
             },
           ),
           
@@ -110,7 +118,12 @@ class _DrawerPageState extends State<DrawerPage> {
             title: Text(AppLocalizations.get('inventory', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
-              // Navigate to inventory page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DrugStockPage(),
+                ),
+              );
             },
           ),
           

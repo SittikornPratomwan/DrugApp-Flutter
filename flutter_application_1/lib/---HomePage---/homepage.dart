@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../---Menu---/drawerpage.dart';
 import '../---Translate---/vocabulary.dart';
@@ -16,6 +18,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController searchController = TextEditingController();
+  int allDrugsCount = 0;
+  int expiringSoonCount = 0;
   
   // Sample data for demonstration
   final List<Map<String, dynamic>> categories = [
@@ -65,6 +69,125 @@ class _HomePageState extends State<HomePage> {
       'expiry': '2026-03-20'
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAllDrugsCount();
+    fetchExpiringSoonCount();
+  }
+
+  Future<void> fetchAllDrugsCount() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.56.107:8514/drugs/product/'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      
+      if (response.statusCode == 200) {
+        final List<dynamic> products = jsonDecode(response.body);
+        
+        // Debug: แสดงข้อมูลตัวอย่างจาก API
+        if (products.isNotEmpty) {
+          print('=== DEBUG API DATA ===');
+          print('Total products from API: ${products.length}');
+          print('Sample product from API: ${products.first}');
+          print('Available fields in first product: ${products.first.keys.toList()}');
+          print('Widget locationId: ${widget.locationId}');
+          print('Widget locationId type: ${widget.locationId.runtimeType}');
+          
+          // แสดงตัวอย่าง location_id จากสินค้า 3 ตัวแรก
+          for (int i = 0; i < 3 && i < products.length; i++) {
+            var product = products[i];
+            print('Product $i location_id: ${product['location_id']} (type: ${product['location_id']?.runtimeType})');
+          }
+          print('=== END DEBUG ===');
+        }
+        
+        // กรองยาตาม locationId ที่เลือกใน authen
+        final filteredProducts = products.where((product) {
+          if (widget.locationId != null && product['location_id'] != null) {
+            // แปลงทั้งคู่เป็น string เพื่อเปรียบเทียบ
+            String productLocationId = product['location_id'].toString();
+            String widgetLocationId = widget.locationId.toString();
+            
+            print('Comparing: product location_id=$productLocationId with widget locationId=$widgetLocationId');
+            return productLocationId == widgetLocationId;
+          }
+          return true; // ถ้าไม่มี locationId ให้แสดงทั้งหมด
+        }).toList();
+        
+        print('Total products: ${products.length}, Filtered products: ${filteredProducts.length}');
+        
+        setState(() {
+          allDrugsCount = filteredProducts.length;
+        });
+      } else {
+        print('Failed to load drugs: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching all drugs count: $e');
+    }
+  }
+
+  Future<void> fetchExpiringSoonCount() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.56.107:8514/drugs/product/'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      
+      if (response.statusCode == 200) {
+        final List<dynamic> products = jsonDecode(response.body);
+        
+        // กรองยาตาม locationId ที่เลือกใน authen
+        final filteredProducts = products.where((product) {
+          if (widget.locationId != null && product['location_id'] != null) {
+            // แปลงทั้งคู่เป็น string เพื่อเปรียบเทียบ
+            String productLocationId = product['location_id'].toString();
+            String widgetLocationId = widget.locationId.toString();
+            return productLocationId == widgetLocationId;
+          }
+          return true; // ถ้าไม่มี locationId ให้แสดงทั้งหมด
+        }).toList();
+        
+        final DateTime now = DateTime.now();
+        final DateTime twoMonthsFromNow = DateTime(now.year, now.month + 2, now.day);
+        
+        int expiring = 0;
+        for (var product in filteredProducts) {
+          if (product['exp'] != null) {
+            try {
+              // แปลง exp จาก ddmmyyyy เป็น DateTime
+              String expString = product['exp'].toString();
+              if (expString.length == 8) {
+                int day = int.parse(expString.substring(0, 2));
+                int month = int.parse(expString.substring(2, 4));
+                int year = int.parse(expString.substring(4, 8));
+                
+                DateTime expDate = DateTime(year, month, day);
+                
+                // ถ้าวันหมดอายุต่ำกว่า 2 เดือนจากวันนี้
+                if (expDate.isBefore(twoMonthsFromNow) && expDate.isAfter(now)) {
+                  expiring++;
+                }
+              }
+            } catch (e) {
+              print('Error parsing exp date: ${product['exp']} - $e');
+            }
+          }
+        }
+        
+        setState(() {
+          expiringSoonCount = expiring;
+        });
+      } else {
+        print('Failed to load drugs for expiring count: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching expiring soon count: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,9 +267,9 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _buildStatCard(AppLocalizations.get('all_drugs', currentLanguage), '342', Icons.medication, isDark),
+                      _buildStatCard(AppLocalizations.get('all_drugs', currentLanguage), allDrugsCount.toString(), Icons.medication, isDark),
                       const SizedBox(width: 12),
-                      _buildStatCard(AppLocalizations.get('expiring_soon', currentLanguage), '12', Icons.warning_amber, isDark),
+                      _buildStatCard(AppLocalizations.get('expiring_soon', currentLanguage), expiringSoonCount.toString(), Icons.warning_amber, isDark),
                     ],
                   ),
                 ],
