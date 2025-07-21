@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../config/api_config.dart';
 
 class DrugStockPage extends StatefulWidget {
   final int? locationId;
@@ -31,7 +32,7 @@ class _DrugStockPageState extends State<DrugStockPage> {
       });
 
       final response = await http.get(
-        Uri.parse('http://192.168.56.107:8514/drugs/product/'),
+        Uri.parse(ApiConfig.drugsProductEndpoint),
         headers: {'Content-Type': 'application/json'},
       );
 

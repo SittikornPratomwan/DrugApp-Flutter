@@ -5,6 +5,7 @@ import 'dart:convert';
 import '../---Menu---/drawerpage.dart';
 import '../---Translate---/vocabulary.dart';
 import '../---Translate---/locale_manager.dart';
+import '../config/api_config.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -80,7 +81,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> fetchAllDrugsCount() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.56.107:8514/drugs/product/'),
+        Uri.parse(ApiConfig.drugsProductEndpoint),
         headers: {'Content-Type': 'application/json'},
       );
       
@@ -133,7 +134,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> fetchExpiringSoonCount() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.56.107:8514/drugs/product/'),
+        Uri.parse(ApiConfig.drugsProductEndpoint),
         headers: {'Content-Type': 'application/json'},
       );
       

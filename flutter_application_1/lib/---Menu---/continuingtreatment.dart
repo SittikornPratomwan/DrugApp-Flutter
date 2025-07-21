@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../---Translate---/vocabulary.dart';
 import '../---Translate---/locale_manager.dart';
+import '../config/api_config.dart';
 
 class ContinuingTreatmentPage extends StatefulWidget {
   const ContinuingTreatmentPage({super.key});
@@ -10,49 +13,54 @@ class ContinuingTreatmentPage extends StatefulWidget {
 }
 
 class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
-  // ข้อมูลตัวอย่างผู้ป่วยที่อยู่ในการรักษาต่อเนื่อง
-  final List<Map<String, dynamic>> treatmentList = [
-    {
-      'id': 1,
-      'patientName': 'นายสมชาย ใจดี',
-      'treatmentName': 'การรักษาความดันโลหิตสูง',
-      'startDate': '15/06/2025',
-      'nextAppointment': '15/08/2025',
-      'medication': 'Amlodipine 5mg',
-      'status': 'active',
-      'note': 'ติดตามอาการทุก 2 เดือน'
-    },
-    {
-      'id': 2,
-      'patientName': 'นางสาวสมใส จริงใจ',
-      'treatmentName': 'การรักษาเบาหวาน',
-      'startDate': '20/05/2025',
-      'nextAppointment': '20/08/2025',
-      'medication': 'Metformin 500mg',
-      'status': 'active',
-      'note': 'ตรวจน้ำตาลในเลือดทุกเดือน'
-    },
-    {
-      'id': 3,
-      'patientName': 'นายประยุทธ สุขใจ',
-      'treatmentName': 'การรักษาโรคหัวใจ',
-      'startDate': '10/04/2025',
-      'nextAppointment': '25/07/2025',
-      'medication': 'Atenolol 50mg',
-      'status': 'warning',
-      'note': 'ใกล้ถึงนัดหมาย'
-    },
-    {
-      'id': 4,
-      'patientName': 'นางสุดา มีสุข',
-      'treatmentName': 'การรักษาไทรอยด์',
-      'startDate': '01/03/2025',
-      'nextAppointment': '01/09/2025',
-      'medication': 'Levothyroxine 75mcg',
-      'status': 'active',
-      'note': 'รับประทานยาตอนเช้าก่อนอาหาร'
-    },
-  ];
+  List<dynamic> treatmentList = [];
+  bool isLoading = true;
+  String errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTreatmentReminders();
+  }
+
+  Future<void> fetchTreatmentReminders() async {
+    try {
+      setState(() {
+        isLoading = true;
+        errorMessage = '';
+      });
+
+      final response = await http.get(
+        Uri.parse('${ApiConfig.remindersEndpoint}?userId=103'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        
+        // Debug: แสดงข้อมูลจาก API
+        if (data.isNotEmpty) {
+          print('=== TREATMENT REMINDERS DEBUG ===');
+          print('Total reminders from API: ${data.length}');
+          print('Sample reminder: ${data.first}');
+          print('Available fields: ${data.first.keys.toList()}');
+        }
+
+        setState(() {
+          treatmentList = data;
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load reminders: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching treatment reminders: $e');
+      setState(() {
+        errorMessage = 'เกิดข้อผิดพลาดในการโหลดข้อมูล: $e';
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +72,13 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
         title: Text(AppLocalizations.get('continuing_treatment', currentLanguage)),
         centerTitle: true,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: fetchTreatmentReminders,
+            tooltip: 'รีเฟรชข้อมูล',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -137,13 +152,68 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
             
             // Patient list
             Expanded(
-              child: ListView.builder(
-                itemCount: treatmentList.length,
-                itemBuilder: (context, index) {
-                  final treatment = treatmentList[index];
-                  return _buildTreatmentCard(treatment, isDark, currentLanguage);
-                },
-              ),
+              child: isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : errorMessage.isNotEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 80,
+                                color: Colors.red.shade400,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                errorMessage,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.red.shade600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: fetchTreatmentReminders,
+                                child: const Text('ลองใหม่'),
+                              ),
+                            ],
+                          ),
+                        )
+                      : treatmentList.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.medical_services_outlined,
+                                    size: 80,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'ไม่มีข้อมูลการรักษาต่อเนื่อง',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : RefreshIndicator(
+                              onRefresh: fetchTreatmentReminders,
+                              child: ListView.builder(
+                                itemCount: treatmentList.length,
+                                itemBuilder: (context, index) {
+                                  final treatment = treatmentList[index];
+                                  return _buildTreatmentCard(treatment, isDark, currentLanguage);
+                                },
+                              ),
+                            ),
             ),
           ],
         ),
@@ -159,7 +229,13 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
   }
 
   Widget _buildTreatmentCard(Map<String, dynamic> treatment, bool isDark, String currentLanguage) {
-    final bool isWarning = treatment['status'] == 'warning';
+    // ปรับให้รองรับ field names จาก API
+    final bool isWarning = treatment['status'] == 'warning' || treatment['urgent'] == true;
+    final String patientName = treatment['userId']?.toString() ?? treatment['patient_name'] ?? treatment['patientName'] ?? 'ไม่ระบุชื่อ';
+    final String treatmentName = treatment['fevertype'] ?? treatment['treatment_name'] ?? treatment['treatmentName'] ?? 'ไม่ระบุการรักษา';
+    final String medication = treatment['drugName'] ?? treatment['medication'] ?? treatment['drug_name'] ?? 'ไม่ระบุยา';
+    final String nextAppointment = treatment['receiveTime'] ?? treatment['next_appointment'] ?? treatment['nextAppointment'] ?? treatment['reminder_date'] ?? 'ไม่ระบุ';
+    final String note = treatment['note'] ?? treatment['description'] ?? '';
     
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -205,7 +281,7 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        treatment['patientName'],
+                        patientName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -213,7 +289,7 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
                         ),
                       ),
                       Text(
-                        treatment['treatmentName'],
+                        treatmentName,
                         style: TextStyle(
                           color: isDark ? Colors.white70 : Colors.grey.shade600,
                           fontSize: 14,
@@ -248,7 +324,7 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
                 Expanded(
                   child: _buildInfoItem(
                     AppLocalizations.get('medication', currentLanguage),
-                    treatment['medication'],
+                    medication,
                     Icons.medication,
                     isDark,
                   ),
@@ -257,7 +333,7 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
                 Expanded(
                   child: _buildInfoItem(
                     AppLocalizations.get('next_appointment', currentLanguage),
-                    treatment['nextAppointment'],
+                    nextAppointment,
                     Icons.calendar_today,
                     isDark,
                   ),
@@ -267,7 +343,7 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
             
             const SizedBox(height: 8),
             
-            if (treatment['note'].isNotEmpty)
+            if (note.isNotEmpty)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(8),
@@ -276,7 +352,7 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '${AppLocalizations.get('note', currentLanguage)}: ${treatment['note']}',
+                  '${AppLocalizations.get('note', currentLanguage)}: $note',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? Colors.white70 : Colors.grey.shade600,

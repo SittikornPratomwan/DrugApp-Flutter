@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '---Translate---/locale_manager.dart';
 import '---Translate---/vocabulary.dart';
+import 'config/api_config.dart';
 
 class Authen extends StatefulWidget {
   const Authen({super.key});
@@ -317,7 +318,7 @@ class _AuthenState extends State<Authen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.56.107:8514/drugs/auth/login'),
+        Uri.parse(ApiConfig.loginEndpoint),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'username': usernameController.text,

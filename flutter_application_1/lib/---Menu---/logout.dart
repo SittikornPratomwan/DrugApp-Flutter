@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../---Translate---/locale_manager.dart';
 import '../---Translate---/vocabulary.dart';
+import '../config/api_config.dart';
 
 Future<void> logout(BuildContext context) async {
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.56.107:8514/drugs/auth/logout'),
+      Uri.parse(ApiConfig.logoutEndpoint),
       headers: {'Content-Type': 'application/json'},
       // ถ้ามี token ให้เพิ่มใน headers เช่น
       // 'Authorization': 'Bearer $token',
