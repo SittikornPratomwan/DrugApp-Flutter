@@ -6,7 +6,7 @@ import '../---Translate---/vocabulary.dart';
 Future<void> logout(BuildContext context) async {
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.56.106:8514/drugs/auth/logout'),
+      Uri.parse('http://192.168.56.107:8514/drugs/auth/logout'),
       headers: {'Content-Type': 'application/json'},
       // ถ้ามี token ให้เพิ่มใน headers เช่น
       // 'Authorization': 'Bearer $token',

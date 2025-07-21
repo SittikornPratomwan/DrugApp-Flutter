@@ -329,15 +329,23 @@ class _AuthenState extends State<Authen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         if (data['success'] == true) {
-          showSnackbar(AppLocalizations.get('login_success', currentLanguage), backgroundColor: Colors.blue);
-          await Future.delayed(const Duration(milliseconds: 500));
-          if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomePage(location: selectedLocation ?? ''),
-            ),
+          print('Login Success: Location = ${selectedLocation ?? ''}, ID = ${selectedLocationId ?? ''}');
+          showSnackbar(
+            '${AppLocalizations.get('login_success', currentLanguage)}\n' +
+            'Location: ${selectedLocation ?? ''} (ID: ${selectedLocationId ?? ''})',
+            backgroundColor: Colors.blue,
           );
+          await Future.delayed(const Duration(milliseconds: 1200));
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomePage(
+                  location: selectedLocation ?? '',
+                  locationId: selectedLocationId,
+                ),
+              ),
+            );
           }
         } else {
           showSnackbar(

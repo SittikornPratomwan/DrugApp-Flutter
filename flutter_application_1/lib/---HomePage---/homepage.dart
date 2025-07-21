@@ -7,7 +7,8 @@ import '../---Translate---/locale_manager.dart';
 
 class HomePage extends StatefulWidget {
   final String location;
-  const HomePage({super.key, this.location = ''});
+  final int? locationId;
+  const HomePage({super.key, this.location = '', this.locationId});
 
   @override
   State<HomePage> createState() => _HomePageState();
