@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/---Menu---/addcontinuingtreatment.dart';
 import 'package:flutter_application_1/---Menu---/logout.dart';
 import '../---Menu---/adddrug.dart';
 import 'setting.dart';
@@ -75,6 +76,12 @@ class _DrawerPageState extends State<DrawerPage> {
             title: Text(AppLocalizations.get('Add Continuing treatment', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddContinuingTreatmentPage(),
+                ),
+              );
             },
           ),
 

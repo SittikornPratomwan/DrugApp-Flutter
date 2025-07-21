@@ -331,8 +331,7 @@ class _AuthenState extends State<Authen> {
         if (data['success'] == true) {
           print('Login Success: Location = ${selectedLocation ?? ''}, ID = ${selectedLocationId ?? ''}');
           showSnackbar(
-            '${AppLocalizations.get('login_success', currentLanguage)}\n' +
-            'Location: ${selectedLocation ?? ''} (ID: ${selectedLocationId ?? ''})',
+            '${AppLocalizations.get('login_success', currentLanguage)}\n',
             backgroundColor: Colors.blue,
           );
           await Future.delayed(const Duration(milliseconds: 1200));
