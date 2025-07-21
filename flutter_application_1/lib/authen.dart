@@ -317,7 +317,7 @@ class _AuthenState extends State<Authen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.56.106:8514/drugs/auth/login'),
+        Uri.parse('http://192.168.56.107:8514/drugs/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'username': usernameController.text,

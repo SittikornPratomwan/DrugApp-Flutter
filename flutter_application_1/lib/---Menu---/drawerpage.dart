@@ -71,8 +71,16 @@ class _DrawerPageState extends State<DrawerPage> {
           
           // Menu Items
           ListTile(
-            leading: const Icon(Icons.home, color: Colors.blue),
-            title: Text(AppLocalizations.get('home', currentLanguage)),
+            leading: const Icon(Icons.add_circle_outline, color: Colors.blue),
+            title: Text(AppLocalizations.get('Add Continuing treatment', currentLanguage)),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+
+                    ListTile(
+            leading: const Icon(Icons.medical_services_outlined, color: Colors.blue),
+            title: Text(AppLocalizations.get('Continuing treatment', currentLanguage)),
             onTap: () {
               Navigator.pop(context);
             },

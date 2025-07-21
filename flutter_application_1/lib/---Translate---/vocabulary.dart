@@ -12,6 +12,8 @@ class AppLocalizations {
       'username': 'ชื่อผู้ใช้',
       'password': 'รหัสผ่าน',
       'home': 'หน้าหลัก',
+      'Add Continuing treatment': 'เพิ่มการรักษาต่อเนื่อง',
+      'Continuing treatment': 'การรักษาต่อเนื่อง',
       'add_drug': 'เพิ่มยา',
       'logout': 'ออกจากระบบ',
       'location': 'สถานที่',
