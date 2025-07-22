@@ -7,7 +7,8 @@ class ApiConfig {
   
   // Drug endpoints
   static const String drugsProductEndpoint = '$baseURL/drugs/product/';
-  static const String remindersEndpoint = '$baseURL/drugs/product/reminders';
+  static const String remindersEndpoint = '$baseURL/drugs/product/reminders?userId';
+  static const String addDrugReceiveEndpoint = '$baseURL/drugs/product/adddrugreceive';
   
   // Other endpoints can be added here
   // static const String userEndpoint = '$baseURL/users';

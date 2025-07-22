@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../---Translate---/vocabulary.dart';
 import '../---Translate---/locale_manager.dart';
 import '../config/api_config.dart';
+import 'addcontinuingtreatment.dart';
 
 class ContinuingTreatmentPage extends StatefulWidget {
   const ContinuingTreatmentPage({super.key});
@@ -220,7 +221,12 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to add new patient treatment
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddContinuingTreatmentPage(),
+            ),
+          );
         },
         backgroundColor: const Color.fromARGB(255, 176, 208, 240),
         child: const Icon(Icons.person_add, color: Colors.white),
