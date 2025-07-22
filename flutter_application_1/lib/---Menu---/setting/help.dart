@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../---Translate---/locale_manager.dart';
-import '../---Translate---/vocabulary.dart';
+import '../../---Translate---/locale_manager.dart';
+import '../../---Translate---/vocabulary.dart';
 
 class HelpPage extends StatefulWidget {
   const HelpPage({super.key});

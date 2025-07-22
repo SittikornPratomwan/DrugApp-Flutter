@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../---Translate---/locale_manager.dart';
-import '../---Translate---/vocabulary.dart';
-import '../config/api_config.dart';
+import '../../---Translate---/locale_manager.dart';
+import '../../---Translate---/vocabulary.dart';
+import '../../config/api_config.dart';
 
 Future<void> logout(BuildContext context) async {
   try {

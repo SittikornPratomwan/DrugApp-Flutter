@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../main.dart';
-import '../---Translate---/locale_manager.dart';
-import '../---Translate---/vocabulary.dart';
+import '../../../main.dart';
+import '../../---Translate---/locale_manager.dart';
+import '../../---Translate---/vocabulary.dart';
 
 class SittingPage extends StatefulWidget {
   const SittingPage({super.key});

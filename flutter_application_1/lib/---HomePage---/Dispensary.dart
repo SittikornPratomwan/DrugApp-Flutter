@@ -38,20 +38,44 @@ class _DispensaryPageState extends State<DispensaryPage> {
         setState(() {
           drugList = data;
         });
+        // Debug: แสดงข้อมูล drug
+        if (data.isNotEmpty) {
+          print('=== DRUG LIST DEBUG ===');
+          print('Total drugs: ${data.length}');
+          print('First drug: ${data.first}');
+          print('Drug fields: ${data.first.keys.toList()}');
+        }
       }
       // ดึง item stock
       final itemRes = await http.get(
         Uri.parse(ApiConfig.drugsProductItemEndpoint),
         headers: {'Content-Type': 'application/json'},
       );
+      
+      print('=== ITEM API RESPONSE ===');
+      print('Item API URL: ${ApiConfig.drugsProductItemEndpoint}');
+      print('Item Response status: ${itemRes.statusCode}');
+      print('Item Response body: ${itemRes.body}');
+      
       if (itemRes.statusCode == 200) {
         final List<dynamic> itemData = jsonDecode(itemRes.body);
         setState(() {
           itemList = itemData;
         });
+        // Debug: แสดงข้อมูล item
+        if (itemData.isNotEmpty) {
+          print('=== ITEM LIST DEBUG ===');
+          print('Total items: ${itemData.length}');
+          print('First item: ${itemData.first}');
+          print('Item fields: ${itemData.first.keys.toList()}');
+        } else {
+          print('Item list is empty!');
+        }
+      } else {
+        print('Failed to fetch items: ${itemRes.statusCode}');
       }
     } catch (e) {
-      // ignore error
+      print('Error fetching data: $e');
     }
   }
 
@@ -66,7 +90,24 @@ class _DispensaryPageState extends State<DispensaryPage> {
       return;
     }
     // หา stock ปัจจุบันจาก item
-    final item = itemList.firstWhere((i) => i['productId'].toString() == drug, orElse: () => null);
+    print('=== FINDING ITEM DEBUG ===');
+    print('Looking for drug ID: $drug');
+    print('ItemList length: ${itemList.length}');
+    if (itemList.isNotEmpty) {
+      print('Sample item fields: ${itemList.first.keys.toList()}');
+      for (var i in itemList.take(3)) {
+        print('Item: productId=${i['productId']}, product_id=${i['product_id']}, id=${i['id']}');
+      }
+    }
+    
+    final item = itemList.firstWhere((i) => 
+      i['productId']?.toString() == drug || 
+      i['product_id']?.toString() == drug ||
+      i['id']?.toString() == drug, 
+      orElse: () => null);
+    
+    print('Found item: $item');
+    
     if (item == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('ไม่พบข้อมูล item ของยา'), backgroundColor: Colors.red),
@@ -155,7 +196,11 @@ class _DispensaryPageState extends State<DispensaryPage> {
                   final drug = drugList.firstWhere((d) => d['id'].toString() == value, orElse: () => null);
                   selectedDrugName = drug != null ? drug['name'] : null;
                   // หา stock จาก itemList โดยใช้ productId
-                  final item = itemList.firstWhere((i) => i['product_id'].toString() == value, orElse: () => null);
+                  final item = itemList.firstWhere((i) => 
+                    i['productId']?.toString() == value || 
+                    i['product_id']?.toString() == value ||
+                    i['id']?.toString() == value, 
+                    orElse: () => null);
                   if (item != null && item['stock'] != null)
                     selectedDrugStock = int.tryParse(item['stock'].toString());
                   else
