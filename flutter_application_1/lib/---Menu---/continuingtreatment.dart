@@ -15,6 +15,7 @@ class ContinuingTreatmentPage extends StatefulWidget {
 
 class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
   List<dynamic> treatmentList = [];
+  List<dynamic> statusList = [];
   bool isLoading = true;
   String errorMessage = '';
 
@@ -22,6 +23,7 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
   void initState() {
     super.initState();
     fetchTreatmentReminders();
+    fetchStatusList();
   }
 
   Future<void> fetchTreatmentReminders() async {
@@ -60,6 +62,23 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
         errorMessage = 'เกิดข้อผิดพลาดในการโหลดข้อมูล: $e';
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> fetchStatusList() async {
+    try {
+      final response = await http.get(
+        Uri.parse(ApiConfig.dropdownStatusEndpoint),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          statusList = data;
+        });
+      }
+    } catch (e) {
+      // ignore error
     }
   }
 
@@ -242,6 +261,15 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
     final String medication = treatment['drugName'] ?? treatment['medication'] ?? treatment['drug_name'] ?? 'ไม่ระบุยา';
     final String nextAppointment = treatment['receiveTime'] ?? treatment['next_appointment'] ?? treatment['nextAppointment'] ?? treatment['reminder_date'] ?? 'ไม่ระบุ';
     final String note = treatment['note'] ?? treatment['description'] ?? '';
+    final String statusValue = treatment['status']?.toString() ?? '';
+    String? statusLabel;
+    if (statusValue.isNotEmpty && statusList.isNotEmpty) {
+      final found = statusList.firstWhere(
+        (s) => s['value'].toString() == statusValue,
+        orElse: () => null,
+      );
+      if (found != null) statusLabel = found['label'] ?? found['value'];
+    }
     
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -365,6 +393,11 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
                     fontStyle: FontStyle.italic,
                   ),
                 ),
+              ),
+            if (statusLabel != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+                child: Text('สถานะ: $statusLabel', style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold)),
               ),
           ],
         ),

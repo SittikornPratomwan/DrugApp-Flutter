@@ -11,6 +11,7 @@ class ApiConfig {
   static const String addDrugReceiveEndpoint = '$baseURL/drugs/product/adddrugreceive';
   static const String dispenseDrugEndpoint = '$baseURL/drugs/dispense';
   static const String drugsProductItemEndpoint = '$baseURL/drugs/product/item';
+  static const String dropdownStatusEndpoint = '$baseURL/drugs/product/dropdownstatus';
   
   // Other endpoints can be added here
   // static const String userEndpoint = '$baseURL/users';
