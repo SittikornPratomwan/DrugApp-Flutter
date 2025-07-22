@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String baseURL = 'http://192.168.56.107:8516';
+  static const String baseURL = 'http://192.168.52.123:8516';
   
   // Authentication endpoints
   static const String loginEndpoint = '$baseURL/drugs/auth/login';
@@ -9,6 +9,8 @@ class ApiConfig {
   static const String drugsProductEndpoint = '$baseURL/drugs/product/';
   static const String remindersEndpoint = '$baseURL/drugs/product/reminders?userId';
   static const String addDrugReceiveEndpoint = '$baseURL/drugs/product/adddrugreceive';
+  static const String dispenseDrugEndpoint = '$baseURL/drugs/dispense';
+  static const String drugsProductItemEndpoint = '$baseURL/drugs/product/item';
   
   // Other endpoints can be added here
   // static const String userEndpoint = '$baseURL/users';

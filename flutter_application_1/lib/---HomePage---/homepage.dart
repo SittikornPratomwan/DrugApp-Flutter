@@ -6,7 +6,7 @@ import '../---Menu---/drawerpage.dart';
 import '../---Translate---/vocabulary.dart';
 import '../---Translate---/locale_manager.dart';
 import '../config/api_config.dart';
-
+import 'Dispensary.dart';
 
 class HomePage extends StatefulWidget {
   final String location;
@@ -374,7 +374,10 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to add drug page
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const DispensaryPage()),
+          );
         },
         backgroundColor: const Color.fromARGB(255, 176, 208, 240),
         child: const Icon(Icons.medical_services, color: Colors.white),
