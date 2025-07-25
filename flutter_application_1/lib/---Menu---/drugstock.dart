@@ -17,6 +17,7 @@ class _DrugStockPageState extends State<DrugStockPage> {
   List<dynamic> filteredDrugs = [];
   bool isLoading = true;
   String searchQuery = '';
+  String selectedFilter = 'ทั้งหมด'; // เพิ่มตัวแปรสำหรับกรอง
   final TextEditingController searchController = TextEditingController();
 
   @override
@@ -91,20 +92,54 @@ class _DrugStockPageState extends State<DrugStockPage> {
   void filterDrugs(String query) {
     setState(() {
       searchQuery = query;
-      if (query.isEmpty) {
-        filteredDrugs = drugs;
-      } else {
-        filteredDrugs = drugs.where((drug) {
-          final productName = (drug['product_name']?.toString() ?? '').toLowerCase();
-          final productId = (drug['product_id']?.toString() ?? '').toLowerCase();
-          final brand = (drug['brand']?.toString() ?? '').toLowerCase();
-          final searchLower = query.toLowerCase();
-          
-          return productName.contains(searchLower) ||
-                 productId.contains(searchLower) ||
-                 brand.contains(searchLower);
-        }).toList();
-      }
+      applyFilters();
+    });
+  }
+
+  void applyFilters() {
+    List<dynamic> result = drugs;
+
+    // กรองตามคำค้นหา
+    if (searchQuery.isNotEmpty) {
+      result = result.where((drug) {
+        final productName = (drug['name']?.toString() ?? '').toLowerCase();
+        final productId = (drug['product_id']?.toString() ?? '').toLowerCase();
+        final brand = (drug['brand']?.toString() ?? '').toLowerCase();
+        final searchLower = searchQuery.toLowerCase();
+        
+        return productName.contains(searchLower) ||
+               productId.contains(searchLower) ||
+               brand.contains(searchLower);
+      }).toList();
+    }
+
+    // กรองตามสถานะ
+    if (selectedFilter != 'ทั้งหมด') {
+      result = result.where((drug) {
+        final isExpiring = isExpiringSoon(drug['exp']?.toString());
+        final isExpiredDrug = isExpired(drug['exp']?.toString());
+        final stockLevel = drug['item']?.toString() ?? '0';
+        final stockCount = int.tryParse(stockLevel) ?? 0;
+        final isLowStock = stockCount < 10 && stockCount > 0;
+        final isOutOfStock = stockCount == 0; // เพิ่มการตรวจสอบสต็อกหมด
+
+        switch (selectedFilter) {
+          case 'ใกล้หมดอายุ':
+            return isExpiring && !isExpiredDrug;
+          case 'หมดอายุแล้ว':
+            return isExpiredDrug;
+          case 'สต็อกต่ำ':
+            return isLowStock;
+          case 'สต็อกหมด': // เพิ่มกรองสต็อกหมด
+            return isOutOfStock;
+          default:
+            return true;
+        }
+      }).toList();
+    }
+
+    setState(() {
+      filteredDrugs = result;
     });
   }
 
@@ -147,6 +182,24 @@ class _DrugStockPageState extends State<DrugStockPage> {
     return false;
   }
 
+  // เพิ่มฟังก์ชันตรวจสอบว่ายาหมดอายุแล้วหรือไม่
+  bool isExpired(String? expDate) {
+    if (expDate == null || expDate.isEmpty) return false;
+    try {
+      if (expDate.length == 8) {
+        int day = int.parse(expDate.substring(0, 2));
+        int month = int.parse(expDate.substring(2, 4));
+        int year = int.parse(expDate.substring(4, 8));
+        DateTime expDateTime = DateTime(year, month, day);
+        DateTime now = DateTime.now();
+        return expDateTime.isBefore(now);
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -159,6 +212,144 @@ class _DrugStockPageState extends State<DrugStockPage> {
         ),
         centerTitle: true,
         actions: [
+          // ปุ่มกรอง (Dropdown)
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.filter_list,
+              color: selectedFilter != 'ทั้งหมด' ? Colors.orange : null,
+            ),
+            tooltip: 'กรองข้อมูล',
+            onSelected: (String value) {
+              setState(() {
+                selectedFilter = value;
+              });
+              applyFilters();
+            },
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem<String>(
+                value: 'ทั้งหมด',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.all_inclusive,
+                      size: 20,
+                      color: selectedFilter == 'ทั้งหมด' ? Colors.blue : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'ทั้งหมด',
+                      style: TextStyle(
+                        fontWeight: selectedFilter == 'ทั้งหมด' ? FontWeight.bold : FontWeight.normal,
+                        color: selectedFilter == 'ทั้งหมด' ? Colors.blue : null,
+                      ),
+                    ),
+                    if (selectedFilter == 'ทั้งหมด') ...[
+                      const Spacer(),
+                      const Icon(Icons.check, color: Colors.blue, size: 18),
+                    ],
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'ใกล้หมดอายุ',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.warning,
+                      size: 20,
+                      color: selectedFilter == 'ใกล้หมดอายุ' ? Colors.orange : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'ใกล้หมดอายุ',
+                      style: TextStyle(
+                        fontWeight: selectedFilter == 'ใกล้หมดอายุ' ? FontWeight.bold : FontWeight.normal,
+                        color: selectedFilter == 'ใกล้หมดอายุ' ? Colors.orange : null,
+                      ),
+                    ),
+                    if (selectedFilter == 'ใกล้หมดอายุ') ...[
+                      const Spacer(),
+                      const Icon(Icons.check, color: Colors.orange, size: 18),
+                    ],
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'หมดอายุแล้ว',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.dangerous,
+                      size: 20,
+                      color: selectedFilter == 'หมดอายุแล้ว' ? Colors.brown : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'หมดอายุแล้ว',
+                      style: TextStyle(
+                        fontWeight: selectedFilter == 'หมดอายุแล้ว' ? FontWeight.bold : FontWeight.normal,
+                        color: selectedFilter == 'หมดอายุแล้ว' ? Colors.brown : null,
+                      ),
+                    ),
+                    if (selectedFilter == 'หมดอายุแล้ว') ...[
+                      const Spacer(),
+                      const Icon(Icons.check, color: Colors.brown, size: 18),
+                    ],
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'สต็อกต่ำ',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.inventory_2,
+                      size: 20,
+                      color: selectedFilter == 'สต็อกต่ำ' ? Colors.red : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'สต็อกต่ำ',
+                      style: TextStyle(
+                        fontWeight: selectedFilter == 'สต็อกต่ำ' ? FontWeight.bold : FontWeight.normal,
+                        color: selectedFilter == 'สต็อกต่ำ' ? Colors.red : null,
+                      ),
+                    ),
+                    if (selectedFilter == 'สต็อกต่ำ') ...[
+                      const Spacer(),
+                      const Icon(Icons.check, color: Colors.red, size: 18),
+                    ],
+                  ],
+                ),
+              ),
+              // เพิ่มตัวเลือกสต็อกหมด
+              PopupMenuItem<String>(
+                value: 'สต็อกหมด',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.remove_circle_outline,
+                      size: 20,
+                      color: selectedFilter == 'สต็อกหมด' ? Colors.red.shade800 : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'สต็อกหมด',
+                      style: TextStyle(
+                        fontWeight: selectedFilter == 'สต็อกหมด' ? FontWeight.bold : FontWeight.normal,
+                        color: selectedFilter == 'สต็อกหมด' ? Colors.red.shade800 : null,
+                      ),
+                    ),
+                    if (selectedFilter == 'สต็อกหมด') ...[
+                      const Spacer(),
+                      Icon(Icons.check, color: Colors.red.shade800, size: 18),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          // ปุ่มรีเฟรช
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: fetchDrugs,
@@ -195,6 +386,53 @@ class _DrugStockPageState extends State<DrugStockPage> {
               ),
             ),
           ),
+
+          // Status Indicator (แสดงสถานะการกรองปัจจุบัน)
+          if (selectedFilter != 'ทั้งหมด')
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: _getFilterColor().withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: _getFilterColor()),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _getFilterIcon(),
+                    size: 16,
+                    color: _getFilterColor(),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'กรองแสดง: $selectedFilter',
+                    style: TextStyle(
+                      color: _getFilterColor(),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedFilter = 'ทั้งหมด';
+                      });
+                      applyFilters();
+                    },
+                    child: Icon(
+                      Icons.close,
+                      size: 16,
+                      color: _getFilterColor(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          const SizedBox(height: 8),
 
           // Results Summary
           Container(
@@ -251,7 +489,7 @@ class _DrugStockPageState extends State<DrugStockPage> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              searchQuery.isNotEmpty
+                              searchQuery.isNotEmpty || selectedFilter != 'ทั้งหมด'
                                   ? 'ไม่พบยาที่ค้นหา'
                                   : 'ไม่มีข้อมูลยา',
                               style: TextStyle(
@@ -259,12 +497,16 @@ class _DrugStockPageState extends State<DrugStockPage> {
                                 color: Colors.grey.shade600,
                               ),
                             ),
-                            if (searchQuery.isNotEmpty) ...[
+                            if (searchQuery.isNotEmpty || selectedFilter != 'ทั้งหมด') ...[
                               const SizedBox(height: 8),
                               TextButton(
                                 onPressed: () {
                                   searchController.clear();
-                                  filterDrugs('');
+                                  setState(() {
+                                    searchQuery = '';
+                                    selectedFilter = 'ทั้งหมด';
+                                  });
+                                  applyFilters();
                                 },
                                 child: const Text('แสดงยาทั้งหมด'),
                               ),
@@ -304,8 +546,11 @@ class _DrugStockPageState extends State<DrugStockPage> {
 
   Widget _buildDrugCard(Map<String, dynamic> drug, bool isDark) {
     final isExpiring = isExpiringSoon(drug['exp']?.toString());
+    final isExpiredDrug = isExpired(drug['exp']?.toString());
     final stockLevel = drug['item']?.toString() ?? '0';
-    final isLowStock = int.tryParse(stockLevel) != null && int.parse(stockLevel) < 10;
+    final stockCount = int.tryParse(stockLevel) ?? 0;
+    final isLowStock = stockCount < 10 && stockCount > 0;
+    final isOutOfStock = stockCount == 0; // เพิ่มการตรวจสอบสต็อกหมด
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -316,9 +561,15 @@ class _DrugStockPageState extends State<DrugStockPage> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: isExpiring || isLowStock
-              ? Border.all(color: Colors.orange, width: 2)
-              : null,
+          border: isExpiredDrug
+              ? Border.all(color: Colors.red, width: 2) // หมดอายุแล้ว = แดง
+              : isOutOfStock
+                  ? Border.all(color: Colors.grey, width: 2) // หมด = เทา
+                  : isExpiring
+                      ? Border.all(color: Colors.yellow, width: 2) // ใกล้หมดอายุ = เหลือง
+                      : isLowStock
+                          ? Border.all(color: Colors.orange, width: 2) // สต็อกต่ำ = ส้ม
+                          : null,
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -356,24 +607,7 @@ class _DrugStockPageState extends State<DrugStockPage> {
                   ),
                   Column(
                     children: [
-                      if (isExpiring)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.orange.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            'ใกล้หมดอายุ',
-                            style: TextStyle(
-                              color: Colors.orange,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      if (isLowStock) ...[
-                        if (isExpiring) const SizedBox(height: 4),
+                      if (isExpiredDrug)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
@@ -381,9 +615,59 @@ class _DrugStockPageState extends State<DrugStockPage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
-                            'สต็อกต่ำ',
+                            'หมดอายุแล้ว',
                             style: TextStyle(
                               color: Colors.red,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      // เพิ่มป้ายสต็อกหมด
+                      if (isOutOfStock)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            'หมด',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      if (!isExpiredDrug && !isOutOfStock && isExpiring)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.yellow.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            'ใกล้หมดอายุ',
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      if (!isOutOfStock && isLowStock) ...[
+                        if (isExpiring || isExpiredDrug) const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            'สต็อกต่ำ',
+                            style: TextStyle(
+                              color: Colors.orange,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -409,10 +693,22 @@ class _DrugStockPageState extends State<DrugStockPage> {
                     _buildDetailRow('รหัสสินค้า', drug['product_id']?.toString() ?? 'ไม่ระบุ', Icons.qr_code),
                     const Divider(height: 16),
                     _buildDetailRow('จำนวนคงเหลือ', '$stockLevel หน่วย', Icons.inventory_2, 
-                        textColor: isLowStock ? Colors.red : null),
+                        textColor: isOutOfStock 
+                            ? Colors.red.shade800 
+                            : isLowStock 
+                                ? Colors.red 
+                                : null),
                     const Divider(height: 16),
-                    _buildDetailRow('วันหมดอายุ', formatDate(drug['exp']?.toString()), Icons.calendar_today,
-                        textColor: isExpiring ? Colors.orange : null),
+                    _buildDetailRow(
+                      'วันหมดอายุ',
+                      formatDate(drug['exp']?.toString()),
+                      Icons.calendar_today,
+                      textColor: isExpiredDrug
+                          ? Colors.brown
+                          : isExpiring
+                              ? Colors.orange
+                              : null,
+                    ),
                     if (drug['lot_number'] != null) ...[
                       const Divider(height: 16),
                       _buildDetailRow('หมายเลข Lot', drug['lot_number'].toString(), Icons.batch_prediction),
@@ -514,9 +810,44 @@ class _DrugStockPageState extends State<DrugStockPage> {
     );
   }
 
+
   @override
   void dispose() {
     searchController.dispose();
     super.dispose();
+  }
+}
+
+// Helper methods สำหรับ filter indicator
+
+extension _DrugStockPageStateHelpers on _DrugStockPageState {
+  Color _getFilterColor() {
+    switch (selectedFilter) {
+      case 'ใกล้หมดอายุ':
+        return Colors.yellow;
+      case 'หมดอายุแล้ว':
+        return Colors.red;
+      case 'สต็อกต่ำ':
+        return Colors.orange;
+      case 'สต็อกหมด':
+        return Colors.grey;
+      default:
+        return Colors.blue;
+    }
+  }
+
+  IconData _getFilterIcon() {
+    switch (selectedFilter) {
+      case 'ใกล้หมดอายุ':
+        return Icons.warning;
+      case 'หมดอายุแล้ว':
+        return Icons.dangerous;
+      case 'สต็อกต่ำ':
+        return Icons.inventory_2;
+      case 'สต็อกหมด':
+        return Icons.remove_circle_outline; // เพิ่มไอคอนสำหรับสต็อกหมด
+      default:
+        return Icons.all_inclusive;
+    }
   }
 }
