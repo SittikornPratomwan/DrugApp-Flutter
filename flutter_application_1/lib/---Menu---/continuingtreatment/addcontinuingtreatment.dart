@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../---Translate---/vocabulary.dart';
-import '../---Translate---/locale_manager.dart';
-import '../config/api_config.dart';
+import '../../---Translate---/vocabulary.dart';
+import '../../---Translate---/locale_manager.dart';
+import '../../config/api_config.dart';
 
 class AddContinuingTreatmentPage extends StatefulWidget {
   const AddContinuingTreatmentPage({super.key});

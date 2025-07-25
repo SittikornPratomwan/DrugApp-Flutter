@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/---Menu---/addcontinuingtreatment.dart';
-import 'package:flutter_application_1/---Menu---/continuingtreatment.dart';
-import 'package:flutter_application_1/---Menu---/drugstock.dart';
+import 'package:flutter_application_1/---Menu---/continuingtreatment/addcontinuingtreatment.dart';
+import 'package:flutter_application_1/---Menu---/continuingtreatment/continuingtreatment.dart';
+import 'package:flutter_application_1/---Menu---/drug/drugstock.dart';
 import 'package:flutter_application_1/---Menu---/setting/logout.dart';
-import '../---Menu---/adddrug.dart';
+import 'drug/adddrug.dart';
 import 'setting/setting.dart';
 import 'setting/help.dart';
 import '../---Translate---/locale_manager.dart';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../---Translate---/vocabulary.dart';
-import '../---Translate---/locale_manager.dart';
-import '../config/api_config.dart';
+import '../../---Translate---/vocabulary.dart';
+import '../../---Translate---/locale_manager.dart';
+import '../../config/api_config.dart';
 import 'addcontinuingtreatment.dart';
 
 class ContinuingTreatmentPage extends StatefulWidget {
