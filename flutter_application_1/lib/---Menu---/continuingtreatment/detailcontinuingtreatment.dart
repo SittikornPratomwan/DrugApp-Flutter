@@ -83,11 +83,11 @@ class DetailContinuingTreatmentPage extends StatelessWidget {
 
       try {
         final response = await http.patch(
-          Uri.parse('https://your-api-server.com/drugs/product/exp'),
+          Uri.parse('http://192.168.56.111:8516/drugs/product/exp'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'id': treatment['drug_id'] ?? treatment['product_id'] ?? treatment['id'],
-            'exp': formattedDate,
+            'receiveTime': formattedDate,
           }),
         );
         if (response.statusCode == 200) {
