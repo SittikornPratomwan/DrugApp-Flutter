@@ -27,7 +27,6 @@ class _AddContinuingTreatmentPageState extends State<AddContinuingTreatmentPage>
   @override
   Widget build(BuildContext context) {
     final currentLanguage = localeManager.currentLocale.languageCode;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.get('add_continuing_treatment', currentLanguage)),

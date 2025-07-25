@@ -147,8 +147,8 @@ class _HelpPageState extends State<HelpPage> {
               const SizedBox(height: 8),
               Text(
                 currentLanguage == 'th'
-                  ? 'พัฒนาโดย: ทีมพัฒนาแอป'
-                  : 'Developed by: App Development Team',
+                  ? 'พัฒนาโดย: เด็กฝึกงานจรูญรัตน์'
+                  : 'Developed by: Internship at Jaroonrat',
               ),
             ],
           ),

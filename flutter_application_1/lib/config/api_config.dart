@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String baseURL = 'http://192.168.52.123:8516';
+  static const String baseURL = 'http://192.168.56.111:8516';
   
   // Authentication endpoints
   static const String loginEndpoint = '$baseURL/drugs/auth/login';
