@@ -5,6 +5,7 @@ import '../../---Translate---/vocabulary.dart';
 import '../../---Translate---/locale_manager.dart';
 import '../../config/api_config.dart';
 import 'addcontinuingtreatment.dart';
+import 'detailcontinuingtreatment.dart';
 
 class ContinuingTreatmentPage extends StatefulWidget {
   const ContinuingTreatmentPage({super.key});
@@ -271,135 +272,145 @@ class _ContinuingTreatmentPageState extends State<ContinuingTreatmentPage> {
       if (found != null) statusLabel = found['label'] ?? found['value'];
     }
     
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900] : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: isWarning 
-            ? Border.all(color: Colors.orange, width: 2)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailContinuingTreatmentPage(treatment: treatment),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.grey[900] : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: isWarning 
+              ? Border.all(color: Colors.orange, width: 2)
+              : null,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isWarning 
+                          ? (isDark ? Colors.orange.shade900 : Colors.orange.shade50)
+                          : (isDark ? Colors.blue.shade900 : Colors.blue.shade50),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.person,
+                      color: isWarning ? Colors.orange : Colors.blue,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          patientName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                        ),
+                        Text(
+                          treatmentName,
+                          style: TextStyle(
+                            color: isDark ? Colors.white70 : Colors.grey.shade600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isWarning)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        AppLocalizations.get('urgent', currentLanguage),
+                        style: const TextStyle(
+                          color: Colors.orange,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              
+              const SizedBox(height: 12),
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildInfoItem(
+                      AppLocalizations.get('medication', currentLanguage),
+                      medication,
+                      Icons.medication,
+                      isDark,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildInfoItem(
+                      AppLocalizations.get('next_appointment', currentLanguage),
+                      nextAppointment,
+                      Icons.calendar_today,
+                      isDark,
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 8),
+              
+              if (note.isNotEmpty)
                 Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isWarning 
-                        ? (isDark ? Colors.orange.shade900 : Colors.orange.shade50)
-                        : (isDark ? Colors.blue.shade900 : Colors.blue.shade50),
+                    color: isDark ? Colors.grey[800] : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
-                    Icons.person,
-                    color: isWarning ? Colors.orange : Colors.blue,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        patientName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                      ),
-                      Text(
-                        treatmentName,
-                        style: TextStyle(
-                          color: isDark ? Colors.white70 : Colors.grey.shade600,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (isWarning)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade100,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      AppLocalizations.get('urgent', currentLanguage),
-                      style: const TextStyle(
-                        color: Colors.orange,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  child: Text(
+                    '${AppLocalizations.get('note', currentLanguage)}: $note',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.white70 : Colors.grey.shade600,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
-              ],
-            ),
-            
-            const SizedBox(height: 12),
-            
-            Row(
-              children: [
-                Expanded(
-                  child: _buildInfoItem(
-                    AppLocalizations.get('medication', currentLanguage),
-                    medication,
-                    Icons.medication,
-                    isDark,
-                  ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildInfoItem(
-                    AppLocalizations.get('next_appointment', currentLanguage),
-                    nextAppointment,
-                    Icons.calendar_today,
-                    isDark,
-                  ),
+              if (statusLabel != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+                  child: Text('สถานะ: $statusLabel', style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold)),
                 ),
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            if (note.isNotEmpty)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.grey[800] : Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${AppLocalizations.get('note', currentLanguage)}: $note',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.white70 : Colors.grey.shade600,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-            if (statusLabel != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
-                child: Text('สถานะ: $statusLabel', style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold)),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
