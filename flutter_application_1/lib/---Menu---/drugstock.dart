@@ -126,7 +126,7 @@ class _DrugStockPageState extends State<DrugStockPage> {
         switch (selectedFilter) {
           case 'ใกล้หมดอายุ':
             return isExpiring && !isExpiredDrug;
-          case 'หมดอายุแล้ว':
+          case 'หมดอายุ':
             return isExpiredDrug;
           case 'สต็อกต่ำ':
             return isLowStock;
@@ -275,23 +275,23 @@ class _DrugStockPageState extends State<DrugStockPage> {
                 ),
               ),
               PopupMenuItem<String>(
-                value: 'หมดอายุแล้ว',
+                value: 'หมดอายุ',
                 child: Row(
                   children: [
                     Icon(
                       Icons.dangerous,
                       size: 20,
-                      color: selectedFilter == 'หมดอายุแล้ว' ? Colors.brown : Colors.grey,
+                      color: selectedFilter == 'หมดอายุ' ? Colors.brown : Colors.grey,
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'หมดอายุแล้ว',
+                      'หมดอายุ',
                       style: TextStyle(
-                        fontWeight: selectedFilter == 'หมดอายุแล้ว' ? FontWeight.bold : FontWeight.normal,
-                        color: selectedFilter == 'หมดอายุแล้ว' ? Colors.brown : null,
+                        fontWeight: selectedFilter == 'หมดอายุ' ? FontWeight.bold : FontWeight.normal,
+                        color: selectedFilter == 'หมดอายุ' ? Colors.brown : null,
                       ),
                     ),
-                    if (selectedFilter == 'หมดอายุแล้ว') ...[
+                    if (selectedFilter == 'หมดอายุ') ...[
                       const Spacer(),
                       const Icon(Icons.check, color: Colors.brown, size: 18),
                     ],
@@ -615,7 +615,7 @@ class _DrugStockPageState extends State<DrugStockPage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
-                            'หมดอายุแล้ว',
+                            'หมดอายุ',
                             style: TextStyle(
                               color: Colors.red,
                               fontSize: 10,
@@ -825,7 +825,7 @@ extension _DrugStockPageStateHelpers on _DrugStockPageState {
     switch (selectedFilter) {
       case 'ใกล้หมดอายุ':
         return Colors.yellow;
-      case 'หมดอายุแล้ว':
+      case 'หมดอายุ':
         return Colors.red;
       case 'สต็อกต่ำ':
         return Colors.orange;
@@ -840,7 +840,7 @@ extension _DrugStockPageStateHelpers on _DrugStockPageState {
     switch (selectedFilter) {
       case 'ใกล้หมดอายุ':
         return Icons.warning;
-      case 'หมดอายุแล้ว':
+      case 'หมดอายุ':
         return Icons.dangerous;
       case 'สต็อกต่ำ':
         return Icons.inventory_2;
