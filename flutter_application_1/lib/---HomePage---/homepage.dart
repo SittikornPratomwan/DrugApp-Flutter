@@ -7,6 +7,7 @@ import '../---Translate---/vocabulary.dart';
 import '../---Translate---/locale_manager.dart';
 import '../config/api_config.dart';
 import 'Dispensary.dart';
+import '../---Menu---/drug/drugstock.dart';
 
 class HomePage extends StatefulWidget {
   final String location;
@@ -353,7 +354,13 @@ class _HomePageState extends State<HomePage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Navigate to all drugs
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DrugStockPage(
+                        ),
+                      ),
+                    );
                   },
                   child: Text(AppLocalizations.get('see_all', currentLanguage)),
                 ),
