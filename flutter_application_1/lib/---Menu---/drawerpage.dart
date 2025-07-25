@@ -3,6 +3,7 @@ import 'package:flutter_application_1/---Menu---/continuingtreatment/addcontinui
 import 'package:flutter_application_1/---Menu---/continuingtreatment/continuingtreatment.dart';
 import 'package:flutter_application_1/---Menu---/drug/drugstock.dart';
 import 'package:flutter_application_1/---Menu---/setting/logout.dart';
+import 'package:flutter_application_1/---Menu---/notification/notification_page.dart';
 import 'drug/adddrug.dart';
 import 'setting/setting.dart';
 import 'setting/help.dart';

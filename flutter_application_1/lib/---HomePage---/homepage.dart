@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../---Menu---/drawerpage.dart';
+import '../---Menu---/notification/notification_page.dart';
 import '../---Translate---/vocabulary.dart';
 import '../---Translate---/locale_manager.dart';
 import '../config/api_config.dart';
@@ -213,7 +214,12 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: Icon(Icons.notifications_outlined, color: isDark ? Colors.white : Colors.black87),
             onPressed: () {
-              // Handle notifications
+              Navigator.push(
+                context, 
+                MaterialPageRoute(
+                  builder: (context) => const NotificationPage(),
+                ),
+              );
             },
           ),
           IconButton(

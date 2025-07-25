@@ -13,6 +13,11 @@ class ApiConfig {
   static const String drugsProductItemEndpoint = '$baseURL/drugs/product/item';
   static const String dropdownStatusEndpoint = '$baseURL/drugs/product/dropdownstatus';
   
+  // Notification endpoints
+  static const String notificationLowStockEndpoint = '$baseURL/drugs/notifications/lowstock';
+  static const String notificationExpiryEndpoint = '$baseURL/drugs/notifications/expiry';
+  static const String notificationSettingsEndpoint = '$baseURL/drugs/notifications/settings';
+  
   // Other endpoints can be added here
   // static const String userEndpoint = '$baseURL/users';
   // static const String orderEndpoint = '$baseURL/orders';

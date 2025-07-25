@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../main.dart';
 import '../../---Translate---/locale_manager.dart';
 import '../../---Translate---/vocabulary.dart';
+import '../notification/notification_settings.dart';
 
 class SittingPage extends StatefulWidget {
   const SittingPage({super.key});
@@ -176,6 +177,24 @@ class _SittingPageState extends State<SittingPage> {
             ),
             value: _notificationsEnabled,
             onChanged: _toggleNotifications,
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.notifications_active, color: Colors.blue),
+            title: const Text(
+              'ตั้งค่าการแจ้งเตือน',
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+            subtitle: const Text('ปรับแต่งการแจ้งเตือนแบบละเอียด'),
+            trailing: const Icon(Icons.arrow_forward_ios),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationSettingsPage(),
+                ),
+              );
+            },
           ),
           const Divider(),
           ListTile(
